@@ -1,0 +1,116 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+jobs:
+
+  # ── macOS (Apple Silicon) → DMG ────────────────────────────────────────────
+  build-mac:
+    name: macOS (Apple Silicon) DMG
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Extract version from tag
+        id: ver
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build DMG
+        run: mvn -Ppackage-mac verify -DskipTests -Dapp.version=${{ steps.ver.outputs.VERSION }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: target/dist/*.dmg
+
+  # ── Windows → MSI ──────────────────────────────────────────────────────────
+  build-win:
+    name: Windows MSI
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Extract version from tag
+        id: ver
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      # jpackage requires WiX 3.x (candle.exe / light.exe).
+      # We install 3.14.1 explicitly since newer WiX versions broke the CLI.
+      - name: Install WiX Toolset 3.14
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314.exe" -OutFile wix314.exe
+          .\wix314.exe /quiet /norestart
+          Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\WiX Toolset v3.14\bin"
+
+      - name: Build MSI
+        run: mvn -Ppackage-win verify -DskipTests "-Dapp.version=${{ steps.ver.outputs.VERSION }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: target/dist/*.msi
+
+  # ── Linux → DEB ────────────────────────────────────────────────────────────
+  build-linux:
+    name: Linux DEB
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Extract version from tag
+        id: ver
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y fakeroot
+
+      - name: Build DEB
+        run: mvn -Ppackage-linux verify -DskipTests -Dapp.version=${{ steps.ver.outputs.VERSION }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: target/dist/*.deb
+
+  # ── GitHub Release ─────────────────────────────────────────────────────────
+  release:
+    name: Create GitHub Release
+    needs: [build-mac, build-win, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/macos-dmg/*.dmg
+            artifacts/windows-msi/*.msi
+            artifacts/linux-deb/*.deb

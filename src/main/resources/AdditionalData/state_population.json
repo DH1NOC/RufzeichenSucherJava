@@ -1,0 +1,18 @@
+[
+  { "state": "Baden-Württemberg",      "population": 11280257 },
+  { "state": "Bayern",                 "population": 13369393 },
+  { "state": "Berlin",                 "population": 3677472  },
+  { "state": "Brandenburg",            "population": 2554182  },
+  { "state": "Bremen",                 "population": 684864   },
+  { "state": "Hamburg",                "population": 1892122  },
+  { "state": "Hessen",                 "population": 6391360  },
+  { "state": "Mecklenburg-Vorpommern", "population": 1628378  },
+  { "state": "Niedersachsen",          "population": 8140243  },
+  { "state": "Nordrhein-Westfalen",    "population": 18139116 },
+  { "state": "Rheinland-Pfalz",        "population": 4159150  },
+  { "state": "Saarland",               "population": 990509   },
+  { "state": "Sachsen",                "population": 4086152  },
+  { "state": "Sachsen-Anhalt",         "population": 2188391  },
+  { "state": "Schleswig-Holstein",     "population": 2953071  },
+  { "state": "Thüringen",              "population": 2126152  }
+]

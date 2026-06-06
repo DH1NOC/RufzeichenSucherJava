@@ -1,0 +1,214 @@
+/* ========================================================================
+   Rufzeichen-Sucher – Dark Theme Overrides
+   Applied additively on top of styles.css when OS dark mode is active.
+   Overrides Modena's base colors to produce a consistent dark UI.
+   ======================================================================== */
+
+.root {
+    /* Modena derives most control colors from -fx-base */
+    -fx-base: #3c3f41;
+    -fx-background: #2b2b2b;
+    -fx-control-inner-background: #45494a;
+
+    /* Text ladder colours */
+    -fx-light-text-color: #f0f0f0;
+    -fx-mid-text-color:   #aaaaaa;
+    -fx-dark-text-color:  #333333;
+
+    /* Focus/accent ring */
+    -fx-focus-color:       #4d9de0;
+    -fx-faint-focus-color: #4d9de033;
+    -fx-accent:            #4d9de0;
+}
+
+/* Ensure ListView background is consistent */
+.list-view {
+    -fx-background-color: #313335;
+}
+
+.list-view .list-cell {
+    -fx-background-color: #313335;
+    -fx-text-fill: #f0f0f0;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: #4d9de0;
+    -fx-text-fill: white;
+}
+
+.list-view .list-cell:filled:hover:selected {
+    -fx-background-color: derive(#4d9de0, 10%);
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: #3c3f41;
+}
+
+/* Text labels in cells on dark mode */
+.callsign-cell-callsign {
+    -fx-text-fill: #f0f0f0;
+}
+
+.callsign-cell-name {
+    -fx-text-fill: #d4d4d4;
+}
+
+.callsign-cell-city {
+    -fx-text-fill: #aaaaaa;
+}
+
+/* Stand-date label */
+.stand-date-label {
+    -fx-text-fill: #aaaaaa;
+}
+
+/* Result counter */
+.result-count-label {
+    -fx-text-fill: #888888;
+}
+
+/* Loading card */
+.loading-card {
+    -fx-background-color: #3c3f41;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 16, 0, 0, 6);
+}
+
+.loading-title {
+    -fx-text-fill: #f0f0f0;
+}
+
+.loading-status {
+    -fx-text-fill: #aaaaaa;
+}
+
+/* SplitPane divider */
+.main-split > .split-pane-divider {
+    -fx-background-color: #555555;
+}
+
+/* ToolBar */
+.tool-bar {
+    -fx-background-color: linear-gradient(to bottom, #3c3f41, #353739);
+    -fx-border-color: #555555;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* TextField */
+.text-field {
+    -fx-background-color: #45494a;
+    -fx-text-fill: #f0f0f0;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: #666666;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.text-field:focused {
+    -fx-border-color: #4d9de0;
+}
+
+/* Segmented control in dark mode */
+.segmented-bar .toggle-button {
+    -fx-background-color: #3c3f41;
+    -fx-text-fill: #d4d4d4;
+    -fx-border-color: #666666;
+}
+
+.segmented-bar .toggle-button:hover {
+    -fx-background-color: #4c5052;
+}
+
+.segmented-bar .toggle-button:selected {
+    -fx-background-color: #4d9de0;
+    -fx-text-fill: white;
+}
+
+/* ScrollBar */
+.scroll-bar {
+    -fx-background-color: #3c3f41;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #606060;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #757575;
+}
+
+/* Detail placeholder */
+.detail-placeholder-label {
+    -fx-text-fill: #888888;
+}
+
+/* Detail pane */
+.detail-callsign {
+    -fx-text-fill: #f0f0f0;
+}
+
+.detail-name {
+    -fx-text-fill: #d4d4d4;
+}
+
+.detail-muted {
+    -fx-text-fill: #888888;
+}
+
+.section-label {
+    -fx-text-fill: #777777;
+}
+
+.dmr-id-label {
+    -fx-text-fill: #d4d4d4;
+}
+
+/* ScrollPane in detail pane */
+.scroll-pane {
+    -fx-background-color: #2b2b2b;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #2b2b2b;
+}
+
+/* Separator */
+.separator .line {
+    -fx-border-color: #555555;
+}
+
+/* Statistics metric cards */
+.metric-card {
+    -fx-background-color: #3c3f41;
+    -fx-border-color: #555555;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0, 0, 2);
+}
+
+.metric-value {
+    -fx-text-fill: #f0f0f0;
+}
+
+.metric-label {
+    -fx-text-fill: #888888;
+}
+
+/* Charts dark mode */
+.chart-plot-background {
+    -fx-background-color: #313335;
+}
+
+.chart-title {
+    -fx-text-fill: #d4d4d4;
+}
+
+.axis-label {
+    -fx-text-fill: #aaaaaa;
+}
+
+.chart-legend {
+    -fx-background-color: #3c3f41;
+}
+
+.chart-legend-item {
+    -fx-text-fill: #d4d4d4;
+}

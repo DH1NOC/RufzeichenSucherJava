@@ -1,0 +1,45 @@
+# =============================================================================
+# Rufzeichen-Sucher – .gitattributes
+# =============================================================================
+
+# Standardverhalten: LF-Zeilenenden im Repository, OS-native beim Checkout
+* text=auto eol=lf
+
+# Windows-Skripte mit CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Explizit Textdateien
+*.java          text eol=lf
+*.fxml          text eol=lf
+*.xml           text eol=lf
+*.json          text eol=lf
+*.md            text eol=lf
+*.css           text eol=lf
+*.properties    text eol=lf
+*.txt           text eol=lf
+*.sh            text eol=lf
+
+# Binärdateien – kein Diff, kein Merge
+*.pdf           binary
+*.csv           binary
+*.jar           binary
+*.class         binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.dmg           binary
+*.exe           binary
+*.msi           binary
+*.deb           binary
+*.rpm           binary
+*.pkg           binary
+
+# Large reference data (Fallback-Ressourcen, werden automatisch aktualisiert)
+src/AdditionalData/user.csv                 binary
+src/AdditionalData/rufzeichenliste_afu.pdf  binary
+src/AdditionalData/zipcodes.de.json         text eol=lf
+src/AdditionalData/state_population.json    text eol=lf
+

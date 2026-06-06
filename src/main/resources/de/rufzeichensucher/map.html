@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #f8f8f8; }
+    #map { width: 100%; height: 100%; }
+    body.dark { background: #2b2b2b; }
+    body.dark .leaflet-tile { filter: brightness(0.85) saturate(0.9); }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    var map      = null;
+    var marker   = null;
+    var _dark    = false;
+    var _pending = null;   // { lat, lon, label } queued while container is too small
+
+    // Minimum container width (px) before Leaflet is allowed to initialize.
+    // 58 px is the wrong early size JavaFX WebKit reports; real size is ~500+.
+    var MIN_WIDTH = 150;
+
+    function jlog(msg) { alert('log:' + msg); }
+    window.onerror = function(msg, src, line) { jlog('ERROR ' + msg + ' @ ' + src + ':' + line); };
+
+    // Called by Java on Worker.State.SUCCEEDED – only stores the dark flag.
+    // Leaflet is NOT created here: the container may still report wrong dimensions.
+    function initMap(dark) {
+      _dark = dark;
+      if (dark) document.body.classList.add('dark');
+      var el = document.getElementById('map');
+      jlog('initMap – container=' + el.clientWidth + 'x' + el.clientHeight);
+    }
+
+    // Create the Leaflet map instance. Only called once the container is wide enough.
+    function createMap() {
+      var el = document.getElementById('map');
+      jlog('createMap – clientWH=' + el.clientWidth + 'x' + el.clientHeight
+           + ' innerWH=' + window.innerWidth + 'x' + window.innerHeight
+           + ' dpr=' + window.devicePixelRatio
+           + ' rect=' + JSON.stringify(el.getBoundingClientRect()));
+      map = L.map('map', { zoomControl: true, attributionControl: true })
+             .setView([51.3, 10.4], 6);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(map);
+      jlog('createMap done – Leaflet size=' + JSON.stringify(map.getSize()));
+    }
+
+    // Position the map at the given coordinates.
+    function applyPending(lat, lon, label) {
+      if (!map) createMap();
+      if (marker) { map.removeLayer(marker); marker = null; }
+      map.invalidateSize({ animate: false });
+      map.setView([lat, lon], 14);
+      marker = L.marker([lat, lon]).addTo(map)
+        .bindPopup('<b>' + label + '</b>').openPopup();
+      jlog('applyPending done – size=' + JSON.stringify(map.getSize()));
+    }
+
+    // Called by Java to show a location. If the container is still too narrow
+    // (WebKit hasn't received the real size from JavaFX yet), a ResizeObserver
+    // waits for the correct width before creating the Leaflet map.
+    function updateMap(lat, lon, label) {
+      var el = document.getElementById('map');
+      jlog('updateMap – container=' + el.clientWidth + 'x' + el.clientHeight);
+
+      if (el.clientWidth >= MIN_WIDTH) {
+        applyPending(lat, lon, label);
+        return;
+      }
+
+      // Container too small – store the request and wait for the real width.
+      _pending = { lat: lat, lon: lon, label: label };
+      jlog('updateMap deferred – waiting for ResizeObserver');
+
+      var ro = new ResizeObserver(function(entries) {
+        var w = entries[0].contentRect.width;
+        jlog('ResizeObserver fired – width=' + w);
+        if (w >= MIN_WIDTH && _pending) {
+          ro.disconnect();
+          var p = _pending;
+          _pending = null;
+          applyPending(p.lat, p.lon, p.label);
+        }
+      });
+      ro.observe(el);
+    }
+
+    // Called by Java when the WebView is hidden, so the next updateMap()
+    // always creates a fresh Leaflet instance with correct dimensions.
+    function resetMap() {
+      if (map) { map.remove(); map = null; marker = null; }
+      if (_pending) { _pending = null; }
+      jlog('resetMap done');
+    }
+  </script>
+</body>
+</html>

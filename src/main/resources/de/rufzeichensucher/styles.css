@@ -1,0 +1,245 @@
+/* ========================================================================
+   Rufzeichen-Sucher – Application Stylesheet (light + dark neutral base)
+   Dark-mode overrides are applied additively via dark-theme.css
+   ======================================================================== */
+
+/* ---- Root / Layout ---------------------------------------------------- */
+.root {
+    -fx-font-family: system;
+}
+
+.main-split {
+    -fx-divider-positions: 0.32;
+}
+
+.main-split > .split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+/* ---- ToolBar ----------------------------------------------------------- */
+.main-toolbar {
+    -fx-spacing: 6;
+    -fx-padding: 6 10 6 10;
+}
+
+.stand-date-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+/* ---- Search area ------------------------------------------------------- */
+.search-box {
+    -fx-padding: 8 8 4 8;
+    -fx-spacing: 0;
+}
+
+.search-field {
+    -fx-min-width: 0;
+    -fx-pref-width: 2000;
+    -fx-prompt-text-fill: derive(-fx-control-inner-background, -40%);
+}
+
+/* Segmented-control (ToggleButtons in a row) */
+.segmented-bar {
+    -fx-padding: 4 8 6 8;
+    -fx-spacing: 0;
+}
+
+.segmented-bar .toggle-button {
+    -fx-background-radius: 0;
+    -fx-font-size: 11px;
+    -fx-padding: 3 10 3 10;
+    -fx-cursor: hand;
+}
+
+.segmented-bar .toggle-button:first-child {
+    -fx-background-radius: 4 0 0 4;
+}
+
+.segmented-bar .toggle-button:last-child {
+    -fx-background-radius: 0 4 4 0;
+}
+
+.segmented-bar .toggle-button:selected {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: white;
+}
+
+/* ---- Result counter ---------------------------------------------------- */
+.result-count-label {
+    -fx-padding: 0 8 4 8;
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+/* ---- ListView / List cells --------------------------------------------- */
+.callsign-list-view {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.callsign-cell {
+    -fx-padding: 6 10 6 10;
+}
+
+.callsign-cell:selected {
+    -fx-background-color: -fx-selection-bar;
+}
+
+.callsign-cell-callsign {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.callsign-cell-name {
+    -fx-font-size: 12px;
+}
+
+.callsign-cell-city {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+/* ---- Badges ------------------------------------------------------------ */
+.badge {
+    -fx-background-radius: 10;
+    -fx-padding: 1 6 1 6;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-min-width: 20;
+    -fx-alignment: center;
+}
+
+/* Class A = blue */
+.badge-a {
+    -fx-background-color: #2196F3;
+}
+
+/* Class E = orange */
+.badge-e {
+    -fx-background-color: #FF9800;
+}
+
+/* Class N = green */
+.badge-n {
+    -fx-background-color: #4CAF50;
+}
+
+/* Other license classes */
+.badge-other {
+    -fx-background-color: #9E9E9E;
+}
+
+/* DMR badge */
+.badge-dmr {
+    -fx-background-color: #9C27B0;
+}
+
+/* ---- Detail placeholder ----------------------------------------------- */
+.detail-placeholder {
+    -fx-alignment: center;
+    -fx-spacing: 8;
+}
+
+.detail-placeholder-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+/* ---- Detail pane -------------------------------------------------------- */
+
+.avatar {
+    -fx-min-width: 44;
+    -fx-max-width: 44;
+    -fx-min-height: 44;
+    -fx-max-height: 44;
+}
+
+.avatar-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.detail-callsign {
+    -fx-font-family: monospace;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.detail-name {
+    -fx-font-size: 13px;
+}
+
+.detail-muted {
+    -fx-text-fill: -fx-mid-text-color;
+    -fx-font-size: 12px;
+}
+
+.section-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+.dmr-id-label {
+    -fx-font-family: monospace;
+    -fx-font-size: 13px;
+}
+
+/* ---- Statistics window ------------------------------------------------- */
+
+.metric-card {
+    -fx-background-color: -fx-background;
+    -fx-background-radius: 8;
+    -fx-border-color: derive(-fx-background, -15%);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 14 16 14 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 4, 0, 0, 2);
+}
+
+.metric-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.metric-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-mid-text-color;
+}
+
+/* ---- Loading overlay --------------------------------------------------- */
+.loading-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.45);
+}
+
+.loading-card {
+    -fx-background-color: -fx-background;
+    -fx-background-radius: 10;
+    -fx-padding: 28 36 28 36;
+    -fx-spacing: 0;
+    -fx-alignment: top-left;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 12, 0, 0, 4);
+}
+
+.loading-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* ---- MapTileView zoom buttons ----------------------------------------- */
+.map-zoom-btn {
+    -fx-background-color: rgba(255,255,255,0.90);
+    -fx-background-radius: 4;
+    -fx-border-color: rgba(0,0,0,0.20);
+    -fx-border-radius: 4;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.18), 3, 0, 0, 1);
+}
+.map-zoom-btn:hover {
+    -fx-background-color: rgba(255,255,255,1.0);
+}

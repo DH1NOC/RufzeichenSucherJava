@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.rufzeichensucher.ui.DetailPaneController"
+           minWidth="320">
+
+    <!-- Empty state: shown when no entry is selected -->
+    <VBox fx:id="emptyState" alignment="CENTER" spacing="8">
+        <Label styleClass="detail-placeholder-label" text="Kein Eintrag ausgewählt"/>
+        <Label styleClass="detail-placeholder-label"
+               style="-fx-font-size: 11px;"
+               text="Rufzeichen in der Liste auswählen"/>
+    </VBox>
+
+    <!--
+      Detail content: a VBox split into two parts.
+      Only the text content (header, address, DMR) lives inside a ScrollPane.
+      The WebView for the map is a DIRECT child of this VBox – never inside a
+      ScrollPane – to avoid the JavaFX/macOS clipping bug that limits tile loading
+      to only the ScrollPane's visible clip region.
+    -->
+    <VBox fx:id="detailVBox" visible="false" managed="false">
+
+        <!-- ── Scrollable text sections ──────────────────────────── -->
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="0">
+
+                <!-- Header -->
+                <VBox spacing="12" style="-fx-padding: 20 20 16 20;">
+                    <HBox spacing="14" alignment="CENTER_LEFT">
+                        <StackPane fx:id="avatarPane" minWidth="44" maxWidth="44"
+                                   minHeight="44" maxHeight="44" styleClass="avatar">
+                            <Label fx:id="avatarLabel" styleClass="avatar-label"/>
+                        </StackPane>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label fx:id="callsignLabel" styleClass="detail-callsign"/>
+                            <Label fx:id="nameLabel" styleClass="detail-name" wrapText="true"/>
+                            <Label fx:id="licenseClassLabel" styleClass="detail-muted"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="8">
+                        <Button fx:id="copyButton" text="Rufzeichen kopieren"/>
+                        <Button fx:id="qrzButton" text="QRZ.com"
+                                visible="false" managed="false"/>
+                    </HBox>
+                </VBox>
+
+                <Separator/>
+
+                <!-- Address section -->
+                <VBox spacing="6" style="-fx-padding: 14 20 14 20;">
+                    <Label text="ADRESSE" styleClass="section-label"/>
+                    <Label fx:id="addressLabel" wrapText="true"/>
+                    <Label fx:id="secondaryLabel" styleClass="detail-muted"
+                           wrapText="true" visible="false" managed="false"/>
+                    <Label fx:id="noAddressLabel"
+                           text="Adresse gesperrt (§ 3 Abs. 4 AFuV)"
+                           styleClass="detail-muted"
+                           visible="false" managed="false"/>
+                </VBox>
+
+                <Separator/>
+
+                <!-- DMR section -->
+                <VBox spacing="6" style="-fx-padding: 14 20 14 20;">
+                    <Label text="DMR" styleClass="section-label"/>
+                    <VBox fx:id="dmrContent" spacing="5"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+        <!-- ── Map section: outside the ScrollPane ───────────────── -->
+        <Separator/>
+        <VBox spacing="8" style="-fx-padding: 10 20 14 20;">
+            <Label text="STANDORT" styleClass="section-label"/>
+            <StackPane fx:id="mapContainer" prefHeight="280" minHeight="180">
+                <Label fx:id="mapPlaceholder" styleClass="detail-muted"
+                       text="Keine Adresse verfügbar"/>
+                <ProgressIndicator fx:id="mapSpinner"
+                                   prefWidth="36" prefHeight="36"
+                                   visible="false" managed="false"/>
+                <Label fx:id="mapErrorLabel" styleClass="detail-muted"
+                       wrapText="true" textAlignment="CENTER"
+                       maxWidth="260"
+                       visible="false" managed="false"/>
+            </StackPane>
+            <ProgressBar fx:id="mapLoadingBar"
+                         progress="0"
+                         prefHeight="5" maxHeight="5" minHeight="5"
+                         maxWidth="Infinity"/>
+            <Button fx:id="openMapButton" text="In OpenStreetMap öffnen"
+                    visible="false" managed="false"/>
+        </VBox>
+
+    </VBox>
+
+</StackPane>

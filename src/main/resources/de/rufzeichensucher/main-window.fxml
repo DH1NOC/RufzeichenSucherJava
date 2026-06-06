@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.rufzeichensucher.ui.MainWindowController"
+           fx:id="rootPane">
+
+    <!-- Main layout -->
+    <BorderPane>
+        <top>
+            <ToolBar styleClass="main-toolbar">
+                <Button fx:id="statisticsButton" text="Statistiken" minWidth="90"/>
+                <Separator orientation="VERTICAL"/>
+                <Button fx:id="refreshButton" text="Aktualisieren" minWidth="110"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="standDateLabel" styleClass="stand-date-label" text="Stand: –"/>
+            </ToolBar>
+        </top>
+
+        <center>
+            <SplitPane fx:id="mainSplit" styleClass="main-split">
+
+                <!-- LEFT: Search + List -->
+                <VBox minWidth="260" prefWidth="320">
+                    <VBox styleClass="search-box" spacing="0">
+                        <TextField fx:id="searchField"
+                                   styleClass="search-field"
+                                   promptText="Rufzeichen, Name oder Ort …"/>
+                    </VBox>
+
+                    <HBox styleClass="segmented-bar" spacing="0">
+                        <fx:define>
+                            <ToggleGroup fx:id="searchModeGroup"/>
+                        </fx:define>
+                        <ToggleButton fx:id="searchByCallsign"
+                                      text="Rufzeichen"
+                                      selected="true"
+                                      toggleGroup="$searchModeGroup"
+                                      HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        <ToggleButton fx:id="searchByName"
+                                      text="Name"
+                                      toggleGroup="$searchModeGroup"
+                                      HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                        <ToggleButton fx:id="searchByCity"
+                                      text="Ort"
+                                      toggleGroup="$searchModeGroup"
+                                      HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    </HBox>
+
+                    <Label fx:id="resultCountLabel" styleClass="result-count-label" text=""/>
+
+                    <ListView fx:id="callsignList"
+                              styleClass="callsign-list-view"
+                              VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <!-- RIGHT: Detail panel -->
+                <fx:include fx:id="detailPane" source="detail-pane.fxml"/>
+
+            </SplitPane>
+        </center>
+    </BorderPane>
+
+    <!-- Loading overlay -->
+    <StackPane fx:id="loadingOverlay"
+               styleClass="loading-overlay"
+               visible="false"
+               mouseTransparent="false">
+
+        <VBox styleClass="loading-card" alignment="TOP_LEFT" maxWidth="360" maxHeight="-Infinity">
+            <Label styleClass="loading-title" text="Daten werden geladen"/>
+            <VBox fx:id="stepsBox" spacing="12" style="-fx-padding: 16 0 4 0;"/>
+        </VBox>
+    </StackPane>
+
+</StackPane>
