@@ -68,26 +68,28 @@ jobs:
           cp -r "/tmp/dmg_src/$APP_NAME" /tmp/
           hdiutil detach /tmp/dmg_src
 
+          # --timestamp is mandatory for notarization: embeds a cryptographic
+          # secure timestamp from Apple's time-stamp authority in every signature.
+          # Without it Apple rejects with "signature invalid".
+
           # Sign all .dylib files inside-out (JRE + JavaFX native libs).
-          # Exclude runtime/Contents/MacOS/ — those are hardlinks to the same
-          # inodes in runtime/Contents/Home/lib/ and would corrupt the signature
-          # if signed a second time.
-          find "/tmp/$APP_NAME" -type f -name "*.dylib" \
-            -not -path "*/runtime/Contents/MacOS/*" | sort | while read lib; do
-            codesign --force --options runtime \
+          # After cp -r, MacOS/libjli.dylib is a separate file from
+          # Home/lib/libjli.dylib and must be signed independently.
+          find "/tmp/$APP_NAME" -type f -name "*.dylib" | sort | while read lib; do
+            codesign --force --timestamp --options runtime \
               --entitlements src/main/packaging/entitlements.plist \
               --sign "$SIGN_ID" "$lib"
           done
 
-          # Sign nested executables (e.g. Contents/MacOS/*, runtime helpers)
+          # Sign nested executables (Contents/MacOS/*, runtime helpers)
           find "/tmp/$APP_NAME" -type f -perm +111 -not -name "*.dylib" | while read exe; do
-            codesign --force --options runtime \
+            codesign --force --timestamp --options runtime \
               --entitlements src/main/packaging/entitlements.plist \
               --sign "$SIGN_ID" "$exe" 2>/dev/null || true
           done
 
           # Sign the app bundle last
-          codesign --force --options runtime \
+          codesign --force --timestamp --options runtime \
             --entitlements src/main/packaging/entitlements.plist \
             --sign "$SIGN_ID" "/tmp/$APP_NAME"
 
@@ -98,8 +100,8 @@ jobs:
             -srcfolder "/tmp/$APP_NAME" \
             -ov -format UDZO "$DMG"
 
-          # Sign DMG itself
-          codesign --sign "$SIGN_ID" "$DMG"
+          # Sign DMG itself (also with timestamp)
+          codesign --timestamp --sign "$SIGN_ID" "$DMG"
 
           # Notarize – capture JSON output so we can fetch the Apple log on failure
           NOTARIZE_OUT=$(xcrun notarytool submit "$DMG" \
