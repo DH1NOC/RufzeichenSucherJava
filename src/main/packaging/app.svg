@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-labelledby="title desc">
+  <title id="title">Rufzeichen-Suche App Icon</title>
+  <desc id="desc">Modernes App-Icon mit Lupe und dem Rufzeichen DH1ABC, wobei der Anfang sichtbar ist und der Rest nach rechts ausfadet. In der Lupe erscheint der gesuchte Rest des Rufzeichens klar.</desc>
+
+  <defs>
+    <linearGradient id="background" x1="128" y1="96" x2="896" y2="928" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="0.48" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="30%" cy="22%" r="72%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="callFade" x1="170" y1="0" x2="760" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="0.38" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="0.72" stop-color="#ffffff" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <radialGradient id="lensFill" cx="38%" cy="34%" r="80%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+    </radialGradient>
+
+    <clipPath id="iconMask">
+      <rect x="0" y="0" width="1024" height="1024" rx="224" ry="224"/>
+    </clipPath>
+
+    <clipPath id="lensClip">
+      <circle cx="724" cy="512" r="124"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#iconMask)">
+    <rect width="1024" height="1024" fill="url(#background)"/>
+    <rect width="1024" height="1024" fill="url(#glow)"/>
+    <path d="M0 760 C196 674 350 724 512 790 C684 860 852 832 1024 734 L1024 1024 L0 1024 Z" fill="#020617" opacity="0.12"/>
+  </g>
+
+  <!-- shadow layer -->
+  <g transform="translate(0 20)" opacity="0.18">
+    <text x="156" y="576" fill="#020617" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="200" font-weight="800" letter-spacing="4">DH1ABC</text>
+    <circle cx="724" cy="512" r="160" fill="none" stroke="#020617" stroke-width="68"/>
+    <line x1="836" y1="624" x2="916" y2="704" stroke="#020617" stroke-width="68" stroke-linecap="round"/>
+  </g>
+
+  <!-- callsign line -->
+  <text x="156" y="576" fill="url(#callFade)" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="200" font-weight="800" letter-spacing="4">DH1ABC</text>
+
+  <!-- lens content -->
+  <circle cx="724" cy="512" r="124" fill="url(#lensFill)"/>
+  <g clip-path="url(#lensClip)">
+    <text x="156" y="576" fill="#ffffff" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="200" font-weight="800" letter-spacing="4">DH1ABC</text>
+    <rect x="646" y="392" width="48" height="200" rx="24" fill="#ffffff" opacity="0.12" transform="rotate(12 670 492)"/>
+  </g>
+
+  <!-- magnifying glass -->
+  <circle cx="724" cy="512" r="160" fill="none" stroke="#ffffff" stroke-width="68"/>
+  <line x1="836" y1="624" x2="916" y2="704" stroke="#ffffff" stroke-width="68" stroke-linecap="round"/>
+</svg>
