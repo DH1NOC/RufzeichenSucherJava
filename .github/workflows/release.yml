@@ -68,9 +68,12 @@ jobs:
           cp -r "/tmp/dmg_src/$APP_NAME" /tmp/
           hdiutil detach /tmp/dmg_src
 
-          # Sign all .dylib files inside-out (JRE + JavaFX native libs)
-          # codesign --deep is insufficient for jpackage bundles with bundled JRE
-          find "/tmp/$APP_NAME" -type f -name "*.dylib" | sort | while read lib; do
+          # Sign all .dylib files inside-out (JRE + JavaFX native libs).
+          # Exclude runtime/Contents/MacOS/ — those are hardlinks to the same
+          # inodes in runtime/Contents/Home/lib/ and would corrupt the signature
+          # if signed a second time.
+          find "/tmp/$APP_NAME" -type f -name "*.dylib" \
+            -not -path "*/runtime/Contents/MacOS/*" | sort | while read lib; do
             codesign --force --options runtime \
               --entitlements src/main/packaging/entitlements.plist \
               --sign "$SIGN_ID" "$lib"
