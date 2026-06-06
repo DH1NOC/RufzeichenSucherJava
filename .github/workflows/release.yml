@@ -73,22 +73,28 @@ jobs:
           APP="/tmp/dmg_rw/$APP_NAME"
           RUNTIME="$APP/Contents/runtime"
 
-          # Inside-out signing for a jpackage app with bundled JRE:
+          # Inside-out signing for a jpackage app with bundled JRE.
+          # Apple notarization requires --options runtime on ALL executables.
+          # Entitlements (allow-jit etc.) only go on the outer app bundle.
+
           # 1. Sign leaf dylibs AND executables inside the runtime
           find "$RUNTIME" -type f \( -name "*.dylib" -o -perm +111 \) | sort | while read f; do
-            codesign --force --timestamp --sign "$SIGN_ID" "$f" 2>/dev/null || true
+            codesign --force --timestamp --options runtime \
+              --sign "$SIGN_ID" "$f" 2>/dev/null || true
           done
 
           # 2. Sign the runtime sub-bundle (has its own Info.plist)
-          codesign --force --timestamp --sign "$SIGN_ID" "$RUNTIME"
+          codesign --force --timestamp --options runtime \
+            --sign "$SIGN_ID" "$RUNTIME"
 
           # 3. Sign dylibs/executables outside the runtime
           find "$APP" -type f \( -name "*.dylib" -o -perm +111 \) \
             -not -path "*/runtime/*" | sort | while read f; do
-            codesign --force --timestamp --sign "$SIGN_ID" "$f" 2>/dev/null || true
+            codesign --force --timestamp --options runtime \
+              --sign "$SIGN_ID" "$f" 2>/dev/null || true
           done
 
-          # 4. Sign the outer app bundle with Hardened Runtime and entitlements
+          # 4. Sign the outer app bundle – entitlements only here
           codesign --force --timestamp --options runtime \
             --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$APP"
 
