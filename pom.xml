@@ -254,7 +254,7 @@
                                         <argument>--main-class</argument>    <argument>de.rufzeichensucher.Launcher</argument>
                                         <argument>--module-path</argument>   <argument>${project.build.directory}/javafx-mods</argument>
                                         <argument>--add-modules</argument>
-                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management</argument>
+                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management,java.net.http,java.prefs,java.desktop</argument>
                                         <argument>--java-options</argument>
                                         <argument>--enable-native-access=javafx.graphics,javafx.media</argument>
                                         <argument>--type</argument>          <argument>dmg</argument>
@@ -360,7 +360,7 @@
                                         <argument>--main-class</argument>    <argument>de.rufzeichensucher.Launcher</argument>
                                         <argument>--module-path</argument>   <argument>${project.build.directory}/javafx-mods</argument>
                                         <argument>--add-modules</argument>
-                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management</argument>
+                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management,java.net.http,java.prefs,java.desktop</argument>
                                         <argument>--java-options</argument>
                                         <argument>--enable-native-access=javafx.graphics,javafx.media</argument>
                                         <argument>--type</argument>          <argument>msi</argument>
@@ -468,7 +468,7 @@
                                         <argument>--main-class</argument>    <argument>de.rufzeichensucher.Launcher</argument>
                                         <argument>--module-path</argument>   <argument>${project.build.directory}/javafx-mods</argument>
                                         <argument>--add-modules</argument>
-                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management</argument>
+                                        <argument>javafx.controls,javafx.fxml,javafx.media,java.naming,java.xml,java.management,java.net.http,java.prefs,java.desktop</argument>
                                         <argument>--java-options</argument>
                                         <argument>--enable-native-access=javafx.graphics,javafx.media</argument>
                                         <argument>--type</argument>          <argument>deb</argument>
