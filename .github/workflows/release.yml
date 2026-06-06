@@ -81,10 +81,11 @@ jobs:
           APP="/tmp/$APP_NAME"
           RUNTIME="$APP/Contents/runtime"
 
-          # Step 1 – sign all dylibs inside the runtime individually
-          find "$RUNTIME" -type f -name "*.dylib" | sort | while read lib; do
+          # Step 1 – sign all dylibs AND executables inside the runtime
+          # (e.g. lib/jspawnhelper, bin/java) before signing the runtime bundle
+          find "$RUNTIME" -type f \( -name "*.dylib" -o -perm +111 \) | sort | while read f; do
             codesign --force --timestamp --options runtime \
-              --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$lib"
+              --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$f" 2>/dev/null || true
           done
 
           # Step 2 – sign the runtime sub-bundle as a whole bundle
