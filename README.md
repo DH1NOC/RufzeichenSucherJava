@@ -49,7 +49,21 @@
 
 ## Screenshots
 
-> *Folgen nach dem ersten Release.*
+**Hauptfenster** – Suche, Detailansicht mit DMR-IDs und interaktiver Karte:
+
+![Hauptfenster](docs/screenshots/hauptfenster.png)
+
+**Statistiken** – Lizenzklassen, Bundesländer-Verteilung und Heatmap:
+
+<table>
+<tr>
+<td><img src="docs/screenshots/statistik_lizenzklassen.png" alt="Lizenzklassen"/></td>
+<td><img src="docs/screenshots/statistik_bundeslaender.png" alt="Bundesländer"/></td>
+</tr>
+<tr>
+<td colspan="2"><img src="docs/screenshots/statistik_heatmap.png" alt="Heatmap"/></td>
+</tr>
+</table>
 
 ---
 
