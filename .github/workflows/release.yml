@@ -62,52 +62,44 @@ jobs:
         run: |
           DMG=$(ls target/dist/*.dmg)
 
-          # Extract .app from DMG
-          hdiutil attach "$DMG" -mountpoint /tmp/dmg_src -readonly
-          APP_NAME=$(ls -d /tmp/dmg_src/*.app | xargs basename)
-          cp -r "/tmp/dmg_src/$APP_NAME" /tmp/
-          hdiutil detach /tmp/dmg_src
-
-          # Correct inside-out signing for a jpackage app with bundled JRE:
-          #
-          # 1. Sign leaf dylibs inside the runtime (individual Mach-O files)
-          # 2. Sign the runtime AS A BUNDLE (Contents/runtime has its own
-          #    Info.plist and must be treated as a nested bundle, not a dir)
-          # 3. Sign the outer app bundle last
-          #
-          # --timestamp is mandatory for notarization.
+          # Convert jpackage DMG to writable image so we can sign in-place.
+          # This preserves the original DMG layout (Applications symlink,
+          # background image, icon positions set by jpackage).
+          hdiutil convert "$DMG" -format UDRW -o /tmp/rw.dmg
+          hdiutil attach /tmp/rw.dmg -mountpoint /tmp/dmg_rw -readwrite -nobrowse
 
           ENTITLEMENTS="src/main/packaging/entitlements.plist"
-          APP="/tmp/$APP_NAME"
+          APP_NAME=$(ls -d /tmp/dmg_rw/*.app | xargs basename)
+          APP="/tmp/dmg_rw/$APP_NAME"
           RUNTIME="$APP/Contents/runtime"
 
-          # Step 1 – sign all dylibs AND executables inside the runtime
-          # (e.g. lib/jspawnhelper, bin/java) before signing the runtime bundle
+          # Inside-out signing for a jpackage app with bundled JRE:
+          # 1. Sign leaf dylibs AND executables inside the runtime
           find "$RUNTIME" -type f \( -name "*.dylib" -o -perm +111 \) | sort | while read f; do
-            codesign --force --timestamp --options runtime \
-              --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$f" 2>/dev/null || true
+            codesign --force --timestamp --sign "$SIGN_ID" "$f" 2>/dev/null || true
           done
 
-          # Step 2 – sign the runtime sub-bundle as a whole bundle
-          codesign --force --timestamp --options runtime \
-            --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$RUNTIME"
+          # 2. Sign the runtime sub-bundle (has its own Info.plist)
+          codesign --force --timestamp --sign "$SIGN_ID" "$RUNTIME"
 
-          # Step 3 – sign any dylibs or executables outside the runtime
+          # 3. Sign dylibs/executables outside the runtime
           find "$APP" -type f \( -name "*.dylib" -o -perm +111 \) \
             -not -path "*/runtime/*" | sort | while read f; do
-            codesign --force --timestamp --options runtime \
-              --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$f" 2>/dev/null || true
+            codesign --force --timestamp --sign "$SIGN_ID" "$f" 2>/dev/null || true
           done
 
-          # Step 4 – sign the outer app bundle last
+          # 4. Sign the outer app bundle with Hardened Runtime and entitlements
           codesign --force --timestamp --options runtime \
             --entitlements "$ENTITLEMENTS" --sign "$SIGN_ID" "$APP"
 
           codesign --verify --deep --strict "$APP"
 
-          # Re-create DMG with signed .app
-          hdiutil create -volname "Rufzeichen-Sucher" \
-            -srcfolder "$APP" -ov -format UDZO "$DMG"
+          hdiutil detach /tmp/dmg_rw
+
+          # Convert back to compressed read-only DMG
+          hdiutil convert /tmp/rw.dmg -format UDZO -o /tmp/signed.dmg
+          mv /tmp/signed.dmg "$DMG"
+          rm /tmp/rw.dmg
 
           # Sign DMG itself
           codesign --timestamp --sign "$SIGN_ID" "$DMG"
