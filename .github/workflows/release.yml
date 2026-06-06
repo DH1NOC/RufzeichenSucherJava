@@ -68,11 +68,26 @@ jobs:
           cp -r "/tmp/dmg_src/$APP_NAME" /tmp/
           hdiutil detach /tmp/dmg_src
 
-          # Sign .app with hardened runtime + JVM entitlements
-          codesign --deep --force --options runtime \
+          # Sign all .dylib files inside-out (JRE + JavaFX native libs)
+          # codesign --deep is insufficient for jpackage bundles with bundled JRE
+          find "/tmp/$APP_NAME" -type f -name "*.dylib" | sort | while read lib; do
+            codesign --force --options runtime \
+              --entitlements src/main/packaging/entitlements.plist \
+              --sign "$SIGN_ID" "$lib"
+          done
+
+          # Sign nested executables (e.g. Contents/MacOS/*, runtime helpers)
+          find "/tmp/$APP_NAME" -type f -perm +111 -not -name "*.dylib" | while read exe; do
+            codesign --force --options runtime \
+              --entitlements src/main/packaging/entitlements.plist \
+              --sign "$SIGN_ID" "$exe" 2>/dev/null || true
+          done
+
+          # Sign the app bundle last
+          codesign --force --options runtime \
             --entitlements src/main/packaging/entitlements.plist \
-            --sign "$SIGN_ID" \
-            "/tmp/$APP_NAME"
+            --sign "$SIGN_ID" "/tmp/$APP_NAME"
+
           codesign --verify --deep --strict "/tmp/$APP_NAME"
 
           # Re-create DMG with signed .app
@@ -83,12 +98,25 @@ jobs:
           # Sign DMG itself
           codesign --sign "$SIGN_ID" "$DMG"
 
-          # Notarize (waits for Apple response, typically 1–5 min)
-          xcrun notarytool submit "$DMG" \
+          # Notarize – capture JSON output so we can fetch the Apple log on failure
+          NOTARIZE_OUT=$(xcrun notarytool submit "$DMG" \
             --apple-id "$APPLE_ID" \
             --password "$APPLE_ID_PASSWORD" \
             --team-id "$APPLE_TEAM_ID" \
-            --wait
+            --wait --output-format json)
+          echo "$NOTARIZE_OUT"
+
+          NOTARIZE_STATUS=$(echo "$NOTARIZE_OUT" | jq -r '.status')
+          NOTARIZE_ID=$(echo "$NOTARIZE_OUT" | jq -r '.id')
+
+          if [ "$NOTARIZE_STATUS" != "Accepted" ]; then
+            echo "Notarization rejected (status: $NOTARIZE_STATUS). Fetching Apple log..."
+            xcrun notarytool log "$NOTARIZE_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_ID_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID"
+            exit 1
+          fi
 
           # Embed notarization ticket into DMG
           xcrun stapler staple "$DMG"
