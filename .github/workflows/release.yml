@@ -24,8 +24,74 @@ jobs:
         id: ver
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
+      - name: Import signing certificate
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE }}
+          CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/signing.keychain-db
+          KEYCHAIN_PWD=$(openssl rand -hex 16)
+
+          security create-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+
+          echo "$CERTIFICATE_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" \
+            -k "$KEYCHAIN_PATH" \
+            -P "$CERTIFICATE_PWD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -s \
+            -k "$KEYCHAIN_PWD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" \
+            $(security list-keychains -d user | sed s/\"//g)
+
+          SIGN_ID=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+            | grep "Developer ID Application" | head -1 | sed -E 's/.*"(.+)"/\1/')
+          echo "SIGN_ID=$SIGN_ID" >> "$GITHUB_ENV"
+
       - name: Build DMG
         run: mvn -Ppackage-mac verify -DskipTests -Dapp.version=${{ steps.ver.outputs.VERSION }}
+
+      - name: Sign, notarize and staple DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          DMG=$(ls target/dist/*.dmg)
+
+          # Extract .app from DMG
+          hdiutil attach "$DMG" -mountpoint /tmp/dmg_src -readonly
+          APP_NAME=$(ls -d /tmp/dmg_src/*.app | xargs basename)
+          cp -r "/tmp/dmg_src/$APP_NAME" /tmp/
+          hdiutil detach /tmp/dmg_src
+
+          # Sign .app with hardened runtime + JVM entitlements
+          codesign --deep --force --options runtime \
+            --entitlements src/main/packaging/entitlements.plist \
+            --sign "$SIGN_ID" \
+            "/tmp/$APP_NAME"
+          codesign --verify --deep --strict "/tmp/$APP_NAME"
+
+          # Re-create DMG with signed .app
+          hdiutil create -volname "Rufzeichen-Sucher" \
+            -srcfolder "/tmp/$APP_NAME" \
+            -ov -format UDZO "$DMG"
+
+          # Sign DMG itself
+          codesign --sign "$SIGN_ID" "$DMG"
+
+          # Notarize (waits for Apple response, typically 1–5 min)
+          xcrun notarytool submit "$DMG" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_ID_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+
+          # Embed notarization ticket into DMG
+          xcrun stapler staple "$DMG"
 
       - uses: actions/upload-artifact@v4
         with:
