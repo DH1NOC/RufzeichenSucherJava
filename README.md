@@ -121,14 +121,14 @@ Ausgabe liegt jeweils in `target/dist/`.
 ┌─────────────────────────────────────────────────────────────┐
 │                        Java Application                     │
 │                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
-│  │ DataManager  │  │ DMRDatabase  │  │ GeocodingService │  │
-│  │ (Rufzeichen) │  │ (RadioID)    │  │ (Nominatim OSM)  │  │
-│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │
+│  │ DataManager  │  │ DMRDatabase  │  │ GeocodingService │   │
+│  │ (Rufzeichen) │  │ (RadioID)    │  │ (Nominatim OSM)  │   │
+│  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘   │
 │         │                 │                   │             │
-│  ┌──────▼──────────────────────────────────────────────┐    │
-│  │              CallsignStatistics                      │    │
-│  │  (Lizenzklassen, Bundesländer, Präfixe, Heatmap)    │    │
+│  ┌──────▼───────────────────────────────────────────────┐   │
+│  │              CallsignStatistics                      │   │
+│  │  (Lizenzklassen, Bundesländer, Präfixe, Heatmap)     │   │
 │  └──────────────────────────────────────────────────────┘   │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -159,7 +159,7 @@ Die vollständige Architekturdokumentation befindet sich in [`ARCHITECTURE.md`](
 
 | Quelle | Beschreibung | Lizenz / Nutzung |
 |---|---|---|
-| [Bundesnetzagentur](https://data.bundesnetzagentur.de/) | Offizielle Rufzeichenliste (PDF) | Open Data |
+| [Bundesnetzagentur](https://data.bundesnetzagentur.de/Bundesnetzagentur/SharedDocs/Downloads/DE/Sachgebiete/Telekommunikation/Unternehmen_Institutionen/Frequenzen/Amateurfunk/Rufzeichenliste/rufzeichenliste_afu.pdf) | Offizielle Rufzeichenliste (PDF) | Open Data |
 | [RadioID.net](https://radioid.net/) | DMR-Datenbank (CSV) | Frei nutzbar |
 | [OpenStreetMap / Nominatim](https://nominatim.openstreetmap.org/) | Geocoding | ODbL, max. 1 req/s |
 | `zipcodes.de.json` | PLZ → Bundesland + Koordinaten | Gebündelt |
